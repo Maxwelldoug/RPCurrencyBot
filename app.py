@@ -62,7 +62,7 @@ currency- delete [currency name] - Deletes the currency''')
                 res = re.sub('[\[\]]', '', res[0])
                 for row in result:
                     if (row['CharacterName'] == res):
-                        dup == true
+                        dup == True
                     print(row, res)
                 if (dup):
                     ret = 'You already have a character with that name.'
