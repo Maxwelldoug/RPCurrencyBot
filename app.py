@@ -144,14 +144,15 @@ currency- delete [currency name] - Deletes the currency''')
         try:
             ret = ''
             uid = int(message.author.id)
-            arg = message.content.removeprefix('$view ')
+            arg = message.content.removeprefix('$currency ')
             res = re.findall(r'\[.*?\]', arg)
-            if (len(arg) == 0):
-                    arg = '[]'
             if (len(res) > 1):
                 ret = 'Too Many Arguments'
+            elif (len(res) == 0):
+                arg = '[]'
             elif (arg[0] != '['):
                 ret = 'Unexpected argument before ['
+                print(arg[0])
             elif (arg[-1] != ']'):
                 ret = 'Unexpected argument after ]'
             else:
