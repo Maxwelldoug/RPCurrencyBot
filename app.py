@@ -107,6 +107,29 @@ currency- delete [currency name] - Deletes the currency''')
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+    
+    if message.content.startswith('$view'):
+        try:
+            ret = ''
+            uid = int(message.author.id)
+            arg = message.content.removeprefix('$view ')
+            res = re.findall(r'\[.*?\]', arg)
+            if (len(res) != 1):
+                ret = 'Too Many or Not Enough Arguments'
+            elif (arg[0] != '['):
+                ret = 'Unexpected argument before ['
+            elif (arg[-1] != ']'):
+                ret = 'Unexpected argument after ]'
+            else:
+                res = re.sub('[\[\]]', '', res[0])
+                cursor.execute('SELECT CurrencyName, Balance FROM Currencies WHERE OwnerID = ' + str(uid) + 'AND CharacterName = ' + res + ';')
+                result = cursor.fetchall()
+                ret = '***' + res + '***'
+                for row in result:
+                    ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
+            await message.channel.send(ret)
+        except Exception as e:
+            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
