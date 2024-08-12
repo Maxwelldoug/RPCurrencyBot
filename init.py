@@ -52,18 +52,21 @@ def initialize():
             cursor.execute('DROP TABLE IF EXISTS ' + table.strip() + ';'.strip())
         cursor.fetchall()
         cursor.execute('''
-CREATE dontrunthis TABLE User (
-    UserID int unsigned NOT NULL AUTO_INCREMENT,
-    UserName varchar(32) NOT NULL,
-    IsAdmin boolean,
-    PRIMARY KEY (UserID)
+CREATE TABLE RPCurBotKeys (
+    KeyName varchar(32) NOT NULL,
+    KeyValue varchar(32) NOT NULL,
+    PRIMARY KEY (KeyName)
 );
         ''')
         cursor.execute('''
-CREATE OR dontrunthis REPLACE PROCEDURE GetKnownItems(IN InputID int unsigned)
+INSERT INTO RPCurBotKeys (KeyName, KeyValue) VALUES
+('DBVersion', '1')
+        ''')
+        cursor.execute('''
+CREATE OR REPLACE PROCEDURE CheckDBVersion()
   BEGIN
-    SELECT * FROM Item
-    WHERE (OwnerID = InputID);
+    SELECT * FROM RPCurBotKeys
+    WHERE (KeyValue = 'DBVersion');
   END
         ''')
         cursor.fetchall()
