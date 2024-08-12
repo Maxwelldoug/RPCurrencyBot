@@ -166,7 +166,7 @@ currency- delete [currency name] - Deletes the currency''')
                     result = cursor.fetchall()
                     ret = '***' + res + '***' + '\n' + 'result'
                     for row in result:
-                        ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
+                        ret = ret + '\n\t' + str(row['CurrencyName']) + ': ' + str(row['Balance'])
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
