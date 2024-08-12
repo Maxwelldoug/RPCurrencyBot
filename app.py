@@ -147,6 +147,8 @@ currency- delete [currency name] - Deletes the currency''')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) > 1):
                 ret = 'Too Many Arguments'
+                if (len(res) == 0):
+                    res = ['[]']
             elif (arg[0] != '['):
                 ret = 'Unexpected argument before ['
             elif (arg[-1] != ']'):
