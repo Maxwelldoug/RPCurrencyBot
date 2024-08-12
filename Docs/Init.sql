@@ -135,3 +135,110 @@ CREATE OR REPLACE PROCEDURE DoTransaction(IN UIDin varchar(32), IN CharName varc
     SET Balance = Balance + Am
     WHERE AccountID = acc;
   END;
+
+-- v3 ---------------------------------------------------
+
+CREATE OR REPLACE PROCEDURE DelCharacter(IN CharName varchar(32), IN UIDin varchar(32))
+  BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE accID INT;
+    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor to get all AccountIDs related to the character
+    OPEN cur;
+
+    -- Loop through each account and delete associated transactions
+    lop: LOOP
+        FETCH cur INTO accID;
+        IF done THEN 
+            LEAVE lop;
+        END IF;
+
+        -- Delete all transactions related to the account
+        DELETE FROM Transactions WHERE AccountID = accID;
+    END LOOP lop;
+
+    -- Close the cursor after processing
+    CLOSE cur;
+
+    -- Delete all accounts related to the character
+    DELETE FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+
+    -- Finally, delete the character itself
+    DELETE FROM Characters WHERE UserID = UIDin AND CharacterName = CharName;
+  END;
+
+CREATE OR REPLACE PROCEDURE DelCurrency(IN CurrName varchar(32))
+  BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE accID INT;
+    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE CurrencyName = CurrName;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor to get all AccountIDs related to the currency
+    OPEN cur;
+
+    -- Loop through each account and delete associated transactions
+    lop: LOOP
+        FETCH cur INTO accID;
+        IF done THEN 
+            LEAVE lop;
+        END IF;
+
+        -- Delete all transactions related to the account
+        DELETE FROM Transactions WHERE AccountID = accID;
+    END LOOP lop;
+
+    -- Close the cursor after processing
+    CLOSE cur;
+
+    -- Delete all accounts related to the currency
+    DELETE FROM Accounts WHERE CurrencyName = CurrName;
+
+    -- Finally, delete the currency itself
+    DELETE FROM Currencies WHERE CurrencyName = CurrName;
+  END;
+
+CREATE OR REPLACE PROCEDURE EditCurrency(IN CurrName varchar(32), IN CurrDesc varchar(1024))
+  BEGIN
+    -- Error handling: Check if the currency exists
+    IF NOT EXISTS (SELECT 1 FROM Currencies WHERE CurrencyName = CurrName) THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Currency does not exist.';
+    ELSE
+        -- Update the description of the existing currency
+        UPDATE Currencies
+        SET CurrencyDesc = CurrDesc
+        WHERE CurrencyName = CurrName;
+    END IF;
+  END;
+
+CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32))
+  BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE accID INT;
+    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open the cursor to get all AccountIDs related to the character
+    OPEN cur;
+
+    -- Loop through each account
+    lop: LOOP
+        FETCH cur INTO accID;
+        IF done THEN 
+            LEAVE lop;
+        END IF;
+
+        -- Delete all transactions related to the account
+        DELETE FROM Transactions WHERE AccountID = accID;
+
+        -- Set the balance to 0 for the account
+        UPDATE Accounts
+        SET Balance = 0
+        WHERE AccountID = accID;
+    END LOOP lop;
+
+    -- Close the cursor after processing
+    CLOSE cur;
+  END;
