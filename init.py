@@ -28,7 +28,8 @@ def CheckDBVersion():
     return int(result[0]['KeyValue'])
 
 def initialize():
-    if (CheckDBVersion == 1):
+    v = CheckDBVersion()
+    if (v == 1):
         return
     else:
         print('Detected First run. Double Checking for Existing data.')
@@ -41,8 +42,8 @@ def initialize():
         for row in tables:
             exists.append(row['Tables_in_'.strip() + settings.DBDATABASE.strip()])
         if exists != []:
-            print(bcolors.WARNING + 'The Database Tables ' + ','.strip().join(exists).strip() + ' Already exist.' + bcolors.ENDC)
-            print(bcolors.FAIL + 'If you continue, they will be dropped.' + bcolors.ENDC)
+            print(bcolors.WARNING + 'The Database Tables ' + ','.strip().join(exists).strip() + ' Already exist. But the bot is not configured.' + bcolors.ENDC)
+            print(bcolors.FAIL + 'If you continue, they will be dropped, as an empty database is required.' + bcolors.ENDC)
             danger = True
         if danger:
             print(bcolors.FAIL + bcolors.UNDERLINE + bcolors.BOLD + 'The above Dangerous Circumstances have been detected. Significant Data Loss is possible.' + bcolors.ENDC)
@@ -51,14 +52,16 @@ def initialize():
                 print('Exiting')
                 sys.exit()
             print('Continuing')
+            for table in exists:
+                cursor.execute('DROP TABLE IF EXISTS ' + table.strip() + ';'.strip())
         else:
             print(bcolors.OKGREEN + 'No Danger here!' + bcolors.ENDC)
         # Below here is the actual initialization. it will be done automatically if no issues were found or after confirmation by user if they are.
         print('Initializing')
 
-        for table in exists:
-            cursor.execute('DROP TABLE IF EXISTS ' + table.strip() + ';'.strip())
         cursor.fetchall()
+
+    if (v < 1):
         cursor.execute('''
 CREATE TABLE RPCurBotKeys (
     KeyName varchar(32) NOT NULL,
