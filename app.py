@@ -58,7 +58,7 @@ currency- delete [currency name] - Deletes the currency''')
             else:
                 res = re.sub('[\[\]]', '', res[0])
                 sql = "AddCharacter"
-                sqlargs = [res, id]
+                sqlargs = [res, uid]
                 cursor.callproc(sql, sqlargs)
                 result = cursor.fetchall()
                 db.commit()
