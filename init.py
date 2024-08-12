@@ -19,6 +19,7 @@ def initialize():
         print('Detected First run. Double Checking for Existing data.')
         danger = False
         db = pymysql.connect(host=settings.DBHOST,
+            port=settings.DBPORT,
 			user=settings.DBUSER,
 			password=settings.DBPASSWD,
 			db=settings.DBDATABASE,
