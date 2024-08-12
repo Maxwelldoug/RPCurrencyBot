@@ -346,3 +346,5 @@ CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32
         cursor.callproc(sql, sqlargs)
         result = cursor.fetchall()
         db.commit()
+        
+return db, cursor
