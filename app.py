@@ -103,7 +103,7 @@ currency- delete [currency name] - Deletes the currency''')
                     cursor.callproc(sql, sqlargs)
                     result = cursor.fetchall()
                     db.commit()
-                    ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
+                    ret = 'Deleted Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
