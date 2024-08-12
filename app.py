@@ -75,5 +75,38 @@ currency- delete [currency name] - Deletes the currency''')
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
 
+    if message.content.startswith('$delete'):
+        try:
+            ret = ''
+            uid = int(message.author.id)
+            arg = message.content.removeprefix('$delete ')
+            res = re.findall(r'\[.*?\]', arg)
+            if (len(res) != 1):
+                ret = 'Too Many or Not Enough Arguments'
+            elif (arg[0] != '['):
+                ret = 'Unexpected argument before ['
+            elif (arg[-1] != ']'):
+                ret = 'Unexpected argument after ]'
+            else:
+                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
+                result = cursor.fetchall()
+                exi = True
+                res = re.sub('[\[\]]', '', res[0])
+                for row in result:
+                    if (row['CharacterName'] == res):
+                        exi = False
+                if (exi):
+                    ret = 'You do not have a character with that Name.'
+                else:
+                    sql = "DelCharacter"
+                    sqlargs = [res, uid]
+                    cursor.callproc(sql, sqlargs)
+                    result = cursor.fetchall()
+                    db.commit()
+                    ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
+            await message.channel.send(ret)
+        except Exception as e:
+            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
