@@ -33,7 +33,7 @@ def CheckDBVersion():
 def initialize():
     v = CheckDBVersion()
     if (v == 3):
-        return
+        return [db,cursor]
     elif (v == 0):
         print('Detected First run. Double Checking for Existing data.')
         danger = False
