@@ -225,6 +225,7 @@ CREATE OR REPLACE PROCEDURE DoTransaction(IN UIDin varchar(32), IN CharName varc
         sqlargs = [2]
         cursor.callproc(sql, sqlargs)
         result = cursor.fetchall()
+        db.commit()
 
     if (v < 3):
         cursor.execute('''
@@ -344,3 +345,4 @@ CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32
         sqlargs = [3]
         cursor.callproc(sql, sqlargs)
         result = cursor.fetchall()
+        db.commit()
