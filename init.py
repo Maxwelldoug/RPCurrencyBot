@@ -25,7 +25,7 @@ def CheckDBVersion():
     sql = "CheckDBVersion"
     cursor.callproc(sql)
     result = cursor.fetchall()
-    return result[0]['KeyValue']
+    return int(result[0]['KeyValue'])
 
 def initialize():
     if (CheckDBVersion == 1):
