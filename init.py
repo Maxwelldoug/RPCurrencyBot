@@ -13,7 +13,7 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 def initialize():
-    if (True): #TODO: determine if database exists.
+    if (False): #TODO: determine if database exists.
         return
     else:
         print('Detected First run. Double Checking for Existing data.')
