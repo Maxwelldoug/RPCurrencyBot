@@ -86,3 +86,4 @@ CREATE OR REPLACE PROCEDURE CheckDBVersion()
         ''')
         cursor.fetchall()
         db.commit()
+        v = 1
