@@ -24,4 +24,5 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('world!')
 
+print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
