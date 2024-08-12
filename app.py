@@ -130,11 +130,12 @@ currency- delete [currency name] - Deletes the currency''')
                         exi = False
                 if (exi):
                     ret = 'You do not have a character with that Name.'
-                cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
-                result = cursor.fetchall()
-                ret = '***' + res + '***'
-                for row in result:
-                    ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
+                else:
+                    cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
+                    result = cursor.fetchall()
+                    ret = '***' + res + '***'
+                    for row in result:
+                        ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
