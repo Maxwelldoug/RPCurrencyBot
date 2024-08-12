@@ -34,7 +34,7 @@ def initialize():
         for row in tables:
             exists.append(row['Tables_in_'.strip() + settings.DBDATABASE.strip()])
         if exists != []:
-            print(bcolors.WARNING + 'The Database Tables ' + exists + ' Already exist.' + bcolors.ENDC)
+            print(bcolors.WARNING + 'The Database Tables ' + ','.strip().join(exists).strip() + ' Already exist.' + bcolors.ENDC)
             print(bcolors.FAIL + 'If you continue, they will be dropped.' + bcolors.ENDC)
             danger = True
         if danger:
