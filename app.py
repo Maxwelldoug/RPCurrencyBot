@@ -3,6 +3,7 @@ import pymysql.cursors
 import settings
 import logging
 import init
+import re
 
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 
@@ -42,9 +43,29 @@ currency-edit [currency name] [new description] - Edits existing currency's desc
 currency- delete [currency name] - Deletes the currency''')
 
     if message.content.startswith('$register'):
-        ret = ''
-        ret = message.author
-        await message.channel.send(ret)
+        try:
+            ret = ''
+            uid = int(message.author.id)
+            print(uid)
+            arg = message.content.removeprefix('$register ')
+            res = re.findall(r'\[.*?\]', arg)
+            if (len(res) != 1):
+                ret = 'Too Many or Not Enough Arguments'
+            elif (arg[0] != '['):
+                ret = 'Unexpected argument before ['
+            elif (arg[-1] != ']'):
+                ret = 'Unexpected argument after ]'
+            else:
+                res = re.sub('[\[\]]', '', res[0])
+                sql = "AddCharacter"
+                sqlargs = [res, id]
+                cursor.callproc(sql, sqlargs)
+                result = cursor.fetchall()
+                db.commit()
+                ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
+            await message.channel.send(ret)
+        except Exception as e:
+            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)

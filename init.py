@@ -99,9 +99,9 @@ CREATE OR REPLACE PROCEDURE SetDBVersion(IN newVersion int unsigned)
     if (v < 2):
         cursor.execute('''
 CREATE TABLE Characters (
-  UserID varchar(32),
+  OwnerID varchar(32),
   CharacterName varchar(32),
-  PRIMARY KEY (UserID, CharacterName)
+  PRIMARY KEY (OwnerID, CharacterName)
 );
         ''')
         cursor.execute('''
@@ -114,13 +114,13 @@ CREATE TABLE Currencies (
         cursor.execute('''
 CREATE TABLE Accounts (
   AccountID int AUTO_INCREMENT,
-  UserID varchar(32),
+  OwnerID varchar(32),
   CharacterName varchar(32),
   CurrencyName varchar(32),
   Balance bigint DEFAULT 0,
   PRIMARY KEY (AccountID),
-  UNIQUE (UserID, CharacterName, CurrencyName),
-  FOREIGN KEY (UserID, CharacterName) REFERENCES Characters(UserID, CharacterName),
+  UNIQUE (OwnerID, CharacterName, CurrencyName),
+  FOREIGN KEY (OwnerID, CharacterName) REFERENCES Characters(OwnerID, CharacterName),
   FOREIGN KEY (CurrencyName) REFERENCES Currencies(CurrencyName)
 );
         ''')
@@ -137,7 +137,7 @@ CREATE TABLE Transactions (
         cursor.execute('''
 CREATE OR REPLACE PROCEDURE AddAccount(IN UIDin varchar(32), IN CharName varchar(32), IN Currency varchar(32))
   BEGIN
-    INSERT INTO Accounts (UserID, CharacterName, CurrencyName, Balance) VALUES
+    INSERT INTO Accounts (OwnerID, CharacterName, CurrencyName, Balance) VALUES
     (UIDin, CharName, Currency, 0);
   END
         ''')
@@ -150,10 +150,10 @@ CREATE OR REPLACE PROCEDURE AddCharacter(IN CharName varchar(32), IN UIDin varch
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     -- Error handling: Check if Character already exists
-    IF EXISTS (SELECT 1 FROM Characters WHERE UserID = UIDin AND CharacterName = CharName) THEN
+    IF EXISTS (SELECT 1 FROM Characters WHERE OwnerID = UIDin AND CharacterName = CharName) THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Character already exists for this user.';
     ELSE
-        INSERT INTO Characters (UserID, CharacterName) 
+        INSERT INTO Characters (OwnerID, CharacterName) 
         VALUES (UIDin, CharName);
     END IF;
 
@@ -177,7 +177,7 @@ CREATE OR REPLACE PROCEDURE AddCurrency(IN CurrName varchar(32), IN CurrDesc var
     DECLARE done INT DEFAULT FALSE;
     DECLARE current VARCHAR(32);
     DECLARE UIDin varchar(32);
-    DECLARE cur CURSOR FOR SELECT UserID, CharacterName FROM Characters;
+    DECLARE cur CURSOR FOR SELECT OwnerID, CharacterName FROM Characters;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     -- Error handling: Check if Currency already exists
@@ -207,7 +207,7 @@ CREATE OR REPLACE PROCEDURE DoTransaction(IN UIDin varchar(32), IN CharName varc
   BEGIN
     DECLARE acc int;
     SELECT AccountID INTO acc FROM Accounts
-    WHERE UserID = UIDin AND CharacterName = CharName AND CurrencyName = CurrName;
+    WHERE OwnerID = UIDin AND CharacterName = CharName AND CurrencyName = CurrName;
 
     INSERT INTO Transactions (AccountID, TransactionDesc, Amount) VALUES
     (acc, TransDesc, Am);
@@ -233,7 +233,7 @@ CREATE OR REPLACE PROCEDURE DoTransaction(IN UIDin varchar(32), IN CharName varc
   BEGIN
     DECLARE done INT DEFAULT FALSE;
     DECLARE accID INT;
-    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE OwnerID = UIDin AND CharacterName = CharName;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     -- Open the cursor to get all AccountIDs related to the character
@@ -254,10 +254,10 @@ CREATE OR REPLACE PROCEDURE DoTransaction(IN UIDin varchar(32), IN CharName varc
     CLOSE cur;
 
     -- Delete all accounts related to the character
-    DELETE FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+    DELETE FROM Accounts WHERE OwnerID = UIDin AND CharacterName = CharName;
 
     -- Finally, delete the character itself
-    DELETE FROM Characters WHERE UserID = UIDin AND CharacterName = CharName;
+    DELETE FROM Characters WHERE OwnerID = UIDin AND CharacterName = CharName;
   END
         ''')
         cursor.execute('''
@@ -311,7 +311,7 @@ CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32
   BEGIN
     DECLARE done INT DEFAULT FALSE;
     DECLARE accID INT;
-    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE UserID = UIDin AND CharacterName = CharName;
+    DECLARE cur CURSOR FOR SELECT AccountID FROM Accounts WHERE OwnerID = UIDin AND CharacterName = CharName;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
 
     -- Open the cursor to get all AccountIDs related to the character
