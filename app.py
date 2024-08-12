@@ -149,7 +149,7 @@ currency- delete [currency name] - Deletes the currency''')
             if (len(res) > 1):
                 ret = 'Too Many Arguments'
                 if (len(res) == 0):
-                    res = ['[]']
+                    arg = '[]'
             elif (arg[0] != '['):
                 ret = 'Unexpected argument before ['
             elif (arg[-1] != ']'):
