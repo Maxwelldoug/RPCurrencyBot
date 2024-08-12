@@ -39,5 +39,10 @@ currency-register [currency name] [description] - Makes the new currency
 currency-edit [currency name] [new description] - Edits existing currency's description
 currency- delete [currency name] - Deletes the currency''')
 
+    if message.content.startswith('$register'):
+        ret = ''
+        ret = message.author
+        await message.channel.send(ret)
+
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
