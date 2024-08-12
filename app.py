@@ -73,7 +73,7 @@ currency- delete [currency name] - Deletes the currency''')
                     ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
         except Exception as e:
-            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
 
     if message.content.startswith('$delete'):
         try:
@@ -106,7 +106,7 @@ currency- delete [currency name] - Deletes the currency''')
                     ret = 'Deleted Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
         except Exception as e:
-            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
     
     if message.content.startswith('$view'):
         try:
@@ -138,7 +138,7 @@ currency- delete [currency name] - Deletes the currency''')
                         ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
             await message.channel.send(ret)
         except Exception as e:
-            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
 
     if message.content.startswith('$currency'):
         try:
@@ -169,7 +169,7 @@ currency- delete [currency name] - Deletes the currency''')
                         ret = ret + '\n\t' + str(row['CurrencyName']) + ': ' + str(row['Balance'])
             await message.channel.send(ret)
         except Exception as e:
-            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
