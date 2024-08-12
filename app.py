@@ -9,7 +9,7 @@ handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w'
 intents = discord.Intents.default()
 # intents.message_content = True
 client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
+tree = discod.app_commands.CommandTree(client)
 
 init.initialize()
 
