@@ -122,7 +122,7 @@ currency- delete [currency name] - Deletes the currency''')
                 ret = 'Unexpected argument after ]'
             else:
                 res = re.sub('[\[\]]', '', res[0])
-                cursor.execute('SELECT CurrencyName, Balance FROM Currencies WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
+                cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
                 result = cursor.fetchall()
                 ret = '***' + res + '***'
                 for row in result:
