@@ -49,7 +49,7 @@ def initialize():
         print('Initializing')
 
         for table in exists:
-            cursor.execute('DROP TABLE IF EXISTS '.strip + table.strip + ';'.strip)
+            cursor.execute('DROP TABLE IF EXISTS ' + table.strip() + ';'.strip())
         cursor.fetchall()
         cursor.execute('''
 CREATE dontrunthis TABLE User (
