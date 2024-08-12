@@ -35,9 +35,9 @@ currency [currency name] - View the specific currency and its description
 leaderboard [currency name] - See who's the richest in this currency, for fun (optional)
 
 **Commands Only For Storytellers**
-pay [character name] [amount] [currency] [description (optional)] - Pays the character the money in that currency with a description
-remove [character name] [amount] [currency] [description (optional)] - Removes the amount of money from character
-removeall [character name] - Removes all the money from the character
+pay [username] [character name] [amount] [currency] [description (optional)] - Pays the character the money in that currency with a description
+remove [username] [character name] [amount] [currency] [description (optional)] - Removes the amount of money from character
+removeall [username] [character name] - Removes all the money from the character
 currency-register [currency name] [description] - Makes the new currency
 currency-edit [currency name] [new description] - Edits existing currency's description
 currency- delete [currency name] - Deletes the currency''')
