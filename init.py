@@ -32,7 +32,7 @@ def CheckDBVersion():
 
 def initialize():
     v = CheckDBVersion()
-    if (v == 2):
+    if (v == 3):
         return
     elif (v == 0):
         print('Detected First run. Double Checking for Existing data.')
