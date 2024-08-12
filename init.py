@@ -59,7 +59,7 @@ def initialize():
             print(bcolors.OKGREEN + 'No Danger here!' + bcolors.ENDC)
         # Below here is the actual initialization. it will be done automatically if no issues were found or after confirmation by user if they are.
     else:
-        print("Updating DB from version" + v)
+        print("Updating DB from version" + str(v))
 
     print('Initializing')
 
