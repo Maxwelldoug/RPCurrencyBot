@@ -12,20 +12,28 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-def initialize():
-    if (False): #TODO: determine if database exists.
-        return
-    else:
-        print('Detected First run. Double Checking for Existing data.')
-        danger = False
-        db = pymysql.connect(host=settings.DBHOST,
+db = pymysql.connect(host=settings.DBHOST,
             port=settings.DBPORT,
 			user=settings.DBUSER,
 			password=settings.DBPASSWD,
 			db=settings.DBDATABASE,
 			charset='utf8mb4',
             cursorclass= pymysql.cursors.DictCursor)
-        cursor = db.cursor()
+cursor = db.cursor()
+
+def CheckDBVersion():
+    sql = "SetAdmin"
+    cursor.callproc(sql)
+    result = cursor.fetchall()
+    print(result)
+    return 0
+
+def initialize():
+    if (CheckDBVersion == 1): #TODO: determine if database exists.
+        return
+    else:
+        print('Detected First run. Double Checking for Existing data.')
+        danger = False
         cursor.execute("""
             SHOW TABLES;
         """)
@@ -66,8 +74,8 @@ INSERT INTO RPCurBotKeys (KeyName, KeyValue) VALUES
         cursor.execute('''
 CREATE OR REPLACE PROCEDURE CheckDBVersion()
   BEGIN
-    SELECT * FROM RPCurBotKeys
-    WHERE (KeyValue = 'DBVersion');
+    SELECT KeyValue FROM RPCurBotKeys
+    WHERE (KeyName = 'DBVersion');
   END
         ''')
         cursor.fetchall()

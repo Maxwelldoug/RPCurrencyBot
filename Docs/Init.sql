@@ -9,8 +9,8 @@ INSERT INTO RPCurBotKeys (KeyName, KeyValue) VALUES
 
 CREATE OR REPLACE PROCEDURE CheckDBVersion()
   BEGIN
-    SELECT * FROM RPCurBotKeys
-    WHERE (KeyValue = 'DBVersion');
+    SELECT KeyValue FROM RPCurBotKeys
+    WHERE (KeyName = 'DBVersion');
   END
 
 -- ---------------------------------------------------
