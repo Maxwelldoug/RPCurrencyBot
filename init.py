@@ -22,32 +22,33 @@ db = pymysql.connect(host=settings.DBHOST,
 cursor = db.cursor()
 
 def CheckDBVersion():
-    sql = "CheckDBVersion"
-    cursor.callproc(sql)
-    result = cursor.fetchall()
-    return int(result[0]['KeyValue'])
+    try:
+        sql = "CheckDBVersion"
+        cursor.callproc(sql)
+        result = cursor.fetchall()
+        return int(result[0]['KeyValue'])
+    except:
+        return 0
 
 def initialize():
     v = CheckDBVersion()
     if (v == 1):
         return
-    else:
+    elif (v == 0):
         print('Detected First run. Double Checking for Existing data.')
         danger = False
-        cursor.execute("""
-            SHOW TABLES;
-        """)
+        cursor.execute("SHOW TABLES;")
         tables = cursor.fetchall()
         exists = []
         for row in tables:
             exists.append(row['Tables_in_'.strip() + settings.DBDATABASE.strip()])
         if exists != []:
-            print(bcolors.WARNING + 'The Database Tables ' + ','.strip().join(exists).strip() + ' Already exist. But the bot is not configured.' + bcolors.ENDC)
-            print(bcolors.FAIL + 'If you continue, they will be dropped, as an empty database is required.' + bcolors.ENDC)
+            print(bcolors.WARNING + 'The Database Tables ' + ','.strip().join(exists).strip() + ' Already exist, but the bot is not configured.' + bcolors.ENDC)
+            print(bcolors.FAIL + 'If you continue, they will be dropped as an empty database is required.' + bcolors.ENDC)
             danger = True
         if danger:
             print(bcolors.FAIL + bcolors.UNDERLINE + bcolors.BOLD + 'The above Dangerous Circumstances have been detected. Significant Data Loss is possible.' + bcolors.ENDC)
-            b = input('''If you have read and understand the above warnings and wish to continue, type [Yes, do as I say!]:\n''')
+            b = input('If you have read and understand the above warnings and wish to continue, type [Yes, do as I say!]:\n')
             if (b != 'Yes, do as I say!'):
                 print('Exiting')
                 sys.exit()
@@ -57,10 +58,13 @@ def initialize():
         else:
             print(bcolors.OKGREEN + 'No Danger here!' + bcolors.ENDC)
         # Below here is the actual initialization. it will be done automatically if no issues were found or after confirmation by user if they are.
-        print('Initializing')
+    else:
+        print("Updating DB from version" + v)
 
-        cursor.fetchall()
+    print('Initializing')
 
+    cursor.fetchall()
+    
     if (v < 1):
         cursor.execute('''
 CREATE TABLE RPCurBotKeys (
