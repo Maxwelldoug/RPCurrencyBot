@@ -56,13 +56,23 @@ currency- delete [currency name] - Deletes the currency''')
             elif (arg[-1] != ']'):
                 ret = 'Unexpected argument after ]'
             else:
-                res = re.sub('[\[\]]', '', res[0])
-                sql = "AddCharacter"
-                sqlargs = [res, uid]
-                cursor.callproc(sql, sqlargs)
+                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
                 result = cursor.fetchall()
-                db.commit()
-                ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
+                dup = False
+                res = re.sub('[\[\]]', '', res[0])
+                for row in result:
+                    if (row == res):
+                        dup == true
+                    print(row, res)
+                if (dup):
+                    ret = 'You already have a character with that name.'
+                else:
+                    sql = "AddCharacter"
+                    sqlargs = [res, uid]
+                    cursor.callproc(sql, sqlargs)
+                    result = cursor.fetchall()
+                    db.commit()
+                    ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
