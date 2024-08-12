@@ -46,7 +46,6 @@ currency- delete [currency name] - Deletes the currency''')
         try:
             ret = ''
             uid = int(message.author.id)
-            print(uid)
             arg = message.content.removeprefix('$register ')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) != 1):
@@ -62,8 +61,7 @@ currency- delete [currency name] - Deletes the currency''')
                 res = re.sub('[\[\]]', '', res[0])
                 for row in result:
                     if (row['CharacterName'] == res):
-                        dup == True
-                    print(row, res)
+                        dup = True
                 if (dup):
                     ret = 'You already have a character with that name.'
                 else:
