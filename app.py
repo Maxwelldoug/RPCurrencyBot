@@ -164,9 +164,9 @@ currency- delete [currency name] - Deletes the currency''')
                     res = re.sub('[\[\]]', '', res[0])
                     cursor.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = "' + res + '";')
                     result = cursor.fetchall()
-                    ret = '***' + res + '***' + '\n' + 'result'
+                    ret = '***' + res + '***' + '\n'
                     for row in result:
-                        ret = ret + '\n\t' + str(row['CurrencyName']) + ': ' + str(row['Balance'])
+                        ret = ret + '\n' + str(row['CurrencyDesc'])
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
