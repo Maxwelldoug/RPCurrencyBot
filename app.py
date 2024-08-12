@@ -30,7 +30,7 @@ register [character name] - Making a character
 delete [character name] - Deleting a character
 view [character name] - Look at the character's amount of money
 history [character name] - Views the character's transaction history (shows descriptions)
-currency - View all the types of currency
+currency - View all the types of currency.
 currency [currency name] - View the specific currency and its description
 leaderboard [currency name] - See who's the richest in this currency, for fun (optional)
 
@@ -121,12 +121,49 @@ currency- delete [currency name] - Deletes the currency''')
             elif (arg[-1] != ']'):
                 ret = 'Unexpected argument after ]'
             else:
+                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
+                result = cursor.fetchall()
+                exi = True
                 res = re.sub('[\[\]]', '', res[0])
+                for row in result:
+                    if (row['CharacterName'] == res):
+                        exi = False
+                if (exi):
+                    ret = 'You do not have a character with that Name.'
                 cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
                 result = cursor.fetchall()
                 ret = '***' + res + '***'
                 for row in result:
                     ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
+            await message.channel.send(ret)
+        except Exception as e:
+            await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
+
+    if message.content.startswith('$currency'):
+        try:
+            ret = ''
+            uid = int(message.author.id)
+            arg = message.content.removeprefix('$view ')
+            res = re.findall(r'\[.*?\]', arg)
+            if (len(res) > 1):
+                ret = 'Too Many Arguments'
+            elif (arg[0] != '['):
+                ret = 'Unexpected argument before ['
+            elif (arg[-1] != ']'):
+                ret = 'Unexpected argument after ]'
+            else:
+                if (len(res) == 0):
+                    cursor.execute('SELECT CurrencyName, CurrencyDesc FROM Currencies;')
+                    result = cursor.fetchall()
+                    for row in result:
+                        ret = ret + row['CurrencyName'] + '\n'
+                else:
+                    res = re.sub('[\[\]]', '', res[0])
+                    cursor.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = "' + res + '";')
+                    result = cursor.fetchall()
+                    ret = '***' + res + '***' + '\n' + 'result'
+                    for row in result:
+                        ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("<@206008886438658048> You Fucked It:\n" + str(e))
