@@ -39,7 +39,7 @@ def initialize():
             danger = True
         if danger:
             print(bcolors.FAIL + bcolors.UNDERLINE + bcolors.BOLD + 'The above Dangerous Circumstances have been detected. Significant Data Loss is possible.' + bcolors.ENDC)
-            b = input('''If you have read and understand the above warnings and wish to continue, type [Yes, do as I say!]:''')
+            b = input('''If you have read and understand the above warnings and wish to continue, type [Yes, do as I say!]:\n''')
             if (b != 'Yes, do as I say!'):
                 print('Exiting')
                 sys.exit()
