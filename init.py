@@ -25,11 +25,10 @@ def CheckDBVersion():
     sql = "CheckDBVersion"
     cursor.callproc(sql)
     result = cursor.fetchall()
-    print(result)
-    return 0
+    return result[0]['KeyValue']
 
 def initialize():
-    if (CheckDBVersion == 1): #TODO: determine if database exists.
+    if (CheckDBVersion == 1):
         return
     else:
         print('Detected First run. Double Checking for Existing data.')
