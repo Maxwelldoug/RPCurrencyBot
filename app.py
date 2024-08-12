@@ -10,7 +10,9 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-db, cursor = init.initialize()
+cursor = init.initialize()
+db = cursor[0]
+cursor = cursor[1]
 
 @client.event
 async def on_ready():
