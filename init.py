@@ -22,7 +22,7 @@ db = pymysql.connect(host=settings.DBHOST,
 cursor = db.cursor()
 
 def CheckDBVersion():
-    sql = "SetAdmin"
+    sql = "CheckDBVersion"
     cursor.callproc(sql)
     result = cursor.fetchall()
     print(result)
