@@ -356,6 +356,7 @@ currdelete [currency name] - Deletes the currency''')
     if message.content.startswith("$pay"):
         try:
             if (is_author_admin(message)):
+                arg = message.content.removeprefix('$pay')
                 res = re.findall(r'\[.*?\]', arg)
                 if (len(res) != 5):
                     ret = 'Too Many or Not Enough Arguments'
@@ -394,7 +395,7 @@ currdelete [currency name] - Deletes the currency''')
                     else:
                         ret = 'Invalid user input, a ping is required.'
             else:
-                    ret = 'You do not have the required role to perform this command.'
+                ret = 'You do not have the required role to perform this command.'
             await message.channel.send(ret)
             return
         except Exception as e:
