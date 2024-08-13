@@ -214,8 +214,8 @@ currdelete [currency name] - Deletes the currency''')
 
                 if arg.startswith('register'):
                     if len(res) == 2:
-                        us = re.sub(r'[\[\]]', '', res[0])
-                        de = re.sub(r'[\[\]]', '', res[1])
+                        us = re.sub('[\[\]]', '', res[0])
+                        de = re.sub('[\[\]]', '', res[1])
 
                         if not currency_exists(us):
                             sql = "AddCurrency"
@@ -230,8 +230,8 @@ currdelete [currency name] - Deletes the currency''')
 
                 elif arg.startswith('edit'):
                     if len(res) == 2:
-                        us = re.sub(r'[\[\]]', '', res[0])
-                        de = re.sub(r'[\[\]]', '', res[1])
+                        us = re.sub('[\[\]]', '', res[0])
+                        de = re.sub('[\[\]]', '', res[1])
 
                         if currency_exists(us):
                             sql = "EditCurrency"
@@ -246,7 +246,7 @@ currdelete [currency name] - Deletes the currency''')
 
                 elif arg.startswith('delete'):
                     if len(res) == 1:
-                        us = re.sub(r'[\[\]]', '', res[0])
+                        us = re.sub('[\[\]]', '', res[0])
 
                         if currency_exists(us):
                             sql = "DelCurrency"
