@@ -30,7 +30,27 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content.contains('--'):
+    if ('--' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+    
+    if ('#' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+    
+    if ('/*' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+    
+    if ('*/' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+    
+    if ('"' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+    
+    if ('\'' in message.content):
         await message.channel.send('Nice try, no SQL injection for you.')
         return
 
