@@ -35,14 +35,14 @@ help - View this message
 register [character name] - Making a character
 delete [character name] - Deleting a character
 view [character name] - Look at the character's amount of money
-history [character name] - Views the character's transaction history (shows descriptions)
+history [character name] - Views the character's transaction history (shows descriptions) -- unimplemented.
 currency - View all the types of currency.
 currency [currency name] - View the specific currency and its description
-leaderboard [currency name] - See who's the richest in this currency, for fun (optional)
+leaderboard [currency name] - See who's the richest in this currency, for fun
 
 **Commands Only For Admins**
-pay [ping user] [character name] [amount] [currency] [description (optional)] - Pays the character the money in that currency with a description
-remove [ping user] [character name] [amount] [currency] [description (optional)] - Removes the amount of money from character
+pay [ping user] [character name] [amount] [currency] [description] - Pays the character the money in that currency with a description
+remove [ping user] [character name] [amount] [currency] [description] - Removes the amount of money from character
 removeall [ping user] [character name] - Removes all the money from the character
 currregister [currency name] [description] - Makes the new currency
 curredit [currency name] [new description] - Edits existing currency's description
@@ -270,6 +270,140 @@ currdelete [currency name] - Deletes the currency''')
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+    
+    if message.content.startswith('$remove'):
+        try:
+            ret = ''
+            uid = int(message.author.id)
+
+            if (is_author_admin(message)):
+                arg = message.content.removeprefix('$remove')
+                if arg.startswith('all'):
+                    res = re.findall(r'\[.*?\]', arg)
+                    if (len(res) != 2):
+                        ret = 'Too Many or Not Enough Arguments'
+                    else:
+                        uid = re.findall('\<@.*?\>', res[0])
+                        if (len(uid) == 1):
+                            uid = re.sub('[\<\@\>]', '', uid[0])
+                            cha = re.sub('[\[\]]', '', res[1])
+                            cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                            result = cursor.fetchall()
+                            exi = True
+                            res = re.sub('[\[\]]', '', res[0])
+                            for row in result:
+                                if (row['CharacterName'] == cha):
+                                    exi = False
+                            if (exi):
+                                ret = 'Selected user does not have a character with that Name.'
+                            else:
+                                sql = 'ZeroBal'
+                                sqlargs = [cha, uid]
+                                cursor.callproc(sql, sqlargs)
+                                cursor.fetchall()
+                                db.commit()
+                                ret = f'set all balances for {cha} to Zero.'
+                        else:
+                            ret = 'Invalid user input, a ping is required.'
+                else:
+                    res = re.findall(r'\[.*?\]', arg)
+                    if (len(res) != 5):
+                        ret = 'Too Many or Not Enough Arguments'
+                    else:
+                        uid = re.findall('\<@.*?\>', res[0])
+                        if (len(uid) == 1):
+                            uid = re.sub('[\<\@\>]', '', uid[0])
+                            cha = re.sub('[\[\]]', '', res[1])
+                            cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                            result = cursor.fetchall()
+                            exi = True
+                            res = re.sub('[\[\]]', '', res[0])
+                            for row in result:
+                                if (row['CharacterName'] == cha):
+                                    exi = False
+                            if (exi):
+                                ret = 'Selected user does not have a character with that Name.'
+                            else:
+                                flag = False
+                                cur = re.sub('[\[\]]', '', res[3])
+                                amo = re.sub('[\[\]]', '', res[2])
+                                des = re.sub('[\[\]]', '', res[4])
+                                try:
+                                    tem = int(amo)
+                                except ValueError:
+                                    flag = True
+                                if (('-' in amo) or ('.' in amo) or flag):
+                                    ret = "Please enter a positive Integer for the transaction amount."
+                                else:
+                                    amo = tem
+                                    sql = 'DoTransaction'
+                                    sqlargs = [uid, cha, cur, des, -amo] # IN UIDin varchar(32), IN CharName varchar(32), IN CurrName varchar(32), IN TransDesc varchar(64), IN Am int
+                                    cursor.callproc(sql, sqlargs)
+                                    cursor.fetchall()
+                                    db.commit()
+                                    ret = f'Charged {amo} {cur} from {cha}'
+                        else:
+                            ret = 'Invalid user input, a ping is required.'
+            else:
+                ret = 'You do not have the required role to perform this command.'
+            await message.channel.send(ret)
+            return
+        except Exception as e:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            outp = template.format(type(ex).__name__, ex.args)
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            return
+    
+    if message.content.startswith("$pay"):
+        try:
+            if (is_author_admin(message)):
+                res = re.findall(r'\[.*?\]', arg)
+                if (len(res) != 5):
+                    ret = 'Too Many or Not Enough Arguments'
+                else:
+                    uid = re.findall('\<@.*?\>', res[0])
+                    if (len(uid) == 1):
+                        uid = re.sub('[\<\@\>]', '', uid[0])
+                        cha = re.sub('[\[\]]', '', res[1])
+                        cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                        result = cursor.fetchall()
+                        exi = True
+                        res = re.sub('[\[\]]', '', res[0])
+                        for row in result:
+                            if (row['CharacterName'] == cha):
+                                exi = False
+                        if (exi):
+                            ret = 'Selected user does not have a character with that Name.'
+                        else:
+                            flag = False
+                            cur = re.sub('[\[\]]', '', res[3])
+                            amo = re.sub('[\[\]]', '', res[2])
+                            des = re.sub('[\[\]]', '', res[4])
+                            try:
+                                tem = int(amo)
+                            except ValueError:
+                                flag = True
+                            if (('-' in amo) or ('.' in amo) or flag):
+                                ret = "Please enter a positive Integer for the transaction amount."
+                            else:
+                                amo = tem
+                                sql = 'DoTransaction'
+                                sqlargs = [uid, cha, cur, des, amo] # IN UIDin varchar(32), IN CharName varchar(32), IN CurrName varchar(32), IN TransDesc varchar(64), IN Am int
+                                cursor.callproc(sql, sqlargs)
+                                cursor.fetchall()
+                                db.commit()
+                                ret = f'Charged {amo} {cur} from {cha}'
+                    else:
+                        ret = 'Invalid user input, a ping is required.'
+            else:
+                    ret = 'You do not have the required role to perform this command.'
+            await message.channel.send(ret)
+            return
+        except Exception as e:
+            template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+            outp = template.format(type(ex).__name__, ex.args)
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            return
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
