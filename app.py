@@ -225,7 +225,34 @@ currdelete [currency name] - Deletes the currency''')
         try:
             ret = ''
             if (is_author_admin(message)):
-                ret = 'Placeholder (You\'re an admin.)'
+                arg = message.content.removeprefix('$curr')
+                res = re.findall(r'\[.*?\]', arg)
+                if arg.startswith('register'):
+                    pass
+                elif arg.startswith('edit'):
+                    pass
+                elif arg.startswith('delete'):
+                    if (res == 1):
+                        exi = False
+                        us = re.sub('[\[\]]', '', res[0])
+                        cursor.execute("SELECT CurrencyName FROM Currencies;")
+                        result = cursor.fetchall()
+                        for row in result:
+                            if (row['CurrencyName'] == us):
+                                exi = True
+                        if (exi):
+                            sql = "DelCurrency"
+                            sqlargs = [us]
+                            cursor.callproc(sql, sqlargs)
+                            result = cursor.fetchall()
+                            db.commit()
+                            ret = us + " was deleted."
+                        else:
+                            ret = "No such currency exists."
+                    else:
+                        ret = 'Too Many or Not Enough Arguments'
+                else:
+                    return
             else:
                 ret = 'You do not have the required role to perform this command.'
             await message.channel.send(ret)
