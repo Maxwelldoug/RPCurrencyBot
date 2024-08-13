@@ -143,7 +143,6 @@ currency- delete [currency name] - Deletes the currency''')
     if message.content.startswith('$currency'):
         try:
             ret = ''
-            uid = int(message.author.id)
             arg = message.content.removeprefix('$currency ')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) == 0):
@@ -170,6 +169,32 @@ currency- delete [currency name] - Deletes the currency''')
             await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+
+    if message.content.startswith('$leaderboard'):
+        try:
+            ret = ''
+            arg = message.content.removeprefix('$leaderboard ')
+            res = re.findall(r'\[.*?\]', arg)
+
+            if (len(res) != 1):
+                ret = 'Too Many or Not Enough Arguments'
+            elif (arg[0] != '['):
+                ret = 'Unexpected argument before ['
+            elif (arg[-1] != ']'):
+                ret = 'Unexpected argument after ]'
+            else:
+                res = re.sub('[\[\]]', '', res[0])
+                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = ' + res + ';')
+                result = cursor.fetchall()
+                newlist = sorted(result, key=lambda d: d['Balance'], reverse=True)
+                newlist = newlist[:10]
+                ret = '**Leaderboards for ' + res + '**'
+                for row in newlist:
+                    ret = ret + '\n' + row['CharacterName'] + ': ' + row['Balance'] 
+
+        except Exception as e:
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
