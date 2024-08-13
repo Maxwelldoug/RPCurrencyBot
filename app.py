@@ -184,7 +184,7 @@ currency- delete [currency name] - Deletes the currency''')
                 ret = 'Unexpected argument after ]'
             else:
                 res = re.sub('[\[\]]', '', res[0])
-                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = ' + res + ';')
+                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = "' + res + '";')
                 result = cursor.fetchall()
                 newlist = sorted(result, key=lambda d: d['Balance'], reverse=True)
                 newlist = newlist[:10]
