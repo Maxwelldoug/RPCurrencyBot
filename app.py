@@ -224,29 +224,56 @@ currdelete [currency name] - Deletes the currency''')
     if message.content.startswith('$curr'):
         try:
             ret = ''
-            if (is_author_admin(message)):
-                arg = message.content.removeprefix('$curr')
+            if is_author_admin(message):
+                arg = message.content.removeprefix('$curr').strip()
                 res = re.findall(r'\[.*?\]', arg)
+                
+                def currency_exists(currency_name):
+                    cursor.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
+                    return cursor.fetchone()[0] > 0
+
                 if arg.startswith('register'):
-                    pass
+                    if len(res) == 2:
+                        us = re.sub(r'[\[\]]', '', res[0])
+                        de = re.sub(r'[\[\]]', '', res[1])
+
+                        if not currency_exists(us):
+                            sql = "AddCurrency"
+                            sqlargs = [us, de]
+                            cursor.callproc(sql, sqlargs)
+                            db.commit()
+                            ret = f"{us} was registered."
+                        else:
+                            ret = "Currency already exists."
+                    else:
+                        ret = 'Too Many or Not Enough Arguments'
+
                 elif arg.startswith('edit'):
-                    pass
+                    if len(res) == 2:
+                        us = re.sub(r'[\[\]]', '', res[0])
+                        de = re.sub(r'[\[\]]', '', res[1])
+
+                        if currency_exists(us):
+                            sql = "EditCurrency"
+                            sqlargs = [us, de]
+                            cursor.callproc(sql, sqlargs)
+                            db.commit()
+                            ret = f"{us} was updated."
+                        else:
+                            ret = "No such currency exists."
+                    else:
+                        ret = 'Too Many or Not Enough Arguments'
+
                 elif arg.startswith('delete'):
-                    if (len(res) == 1):
-                        exi = False
-                        us = re.sub('[\[\]]', '', res[0])
-                        cursor.execute("SELECT CurrencyName FROM Currencies;")
-                        result = cursor.fetchall()
-                        for row in result:
-                            if (row['CurrencyName'] == us):
-                                exi = True
-                        if (exi):
+                    if len(res) == 1:
+                        us = re.sub(r'[\[\]]', '', res[0])
+
+                        if currency_exists(us):
                             sql = "DelCurrency"
                             sqlargs = [us]
                             cursor.callproc(sql, sqlargs)
-                            result = cursor.fetchall()
                             db.commit()
-                            ret = us + " was deleted."
+                            ret = f"{us} was deleted."
                         else:
                             ret = "No such currency exists."
                     else:
@@ -255,11 +282,13 @@ currdelete [currency name] - Deletes the currency''')
                     return
             else:
                 ret = 'You do not have the required role to perform this command.'
+
             await message.channel.send(ret)
             return
         except Exception as e:
-            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            await message.channel.send(f"Paging <@206008886438658048>, something's broke:\n{str(e)}")
             return
+
 
             
 
