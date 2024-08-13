@@ -78,7 +78,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
 
     if message.content.startswith('$delete'):
@@ -111,7 +111,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
     
     if message.content.startswith('$view'):
@@ -143,7 +143,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
 
     if message.content.startswith('$currency'):
@@ -173,7 +173,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
 
     if message.content.startswith('$leaderboard'):
@@ -198,7 +198,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
     
     if message.content.startswith('$curr'):
@@ -268,7 +268,7 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as ex:
             template = "An exception of type {0} occurred. Arguments:\n{1!r}"
             outp = template.format(type(ex).__name__, ex.args)
-            wait message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
