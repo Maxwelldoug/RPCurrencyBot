@@ -317,7 +317,6 @@ currdelete [currency name] - Deletes the currency''')
                             cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
                             result = cursor.fetchall()
                             exi = True
-                            res = re.sub('[\[\]]', '', res[0])
                             for row in result:
                                 if (row['CharacterName'] == cha):
                                     exi = False
@@ -368,7 +367,6 @@ currdelete [currency name] - Deletes the currency''')
                         cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
                         result = cursor.fetchall()
                         exi = True
-                        res = re.sub('[\[\]]', '', res[0])
                         for row in result:
                             if (row['CharacterName'] == cha):
                                 exi = False
