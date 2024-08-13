@@ -159,6 +159,7 @@ currdelete [currency name] - Deletes the currency''')
                 if (len(res) == 0):
                     cursor.execute('SELECT CurrencyName, CurrencyDesc FROM Currencies;')
                     result = cursor.fetchall()
+                    ret = '**List of Currencies:**\n'
                     for row in result:
                         ret = ret + row['CurrencyName'] + '\n'
                 else:
@@ -210,11 +211,8 @@ currdelete [currency name] - Deletes the currency''')
 
                 def currency_exists(currency_name):
                     cursor.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
-                    if (cursor.fetchall() is not None):
-                        return True
-                    else:
-                        return False
-
+                    exis = cursor.fetchall()
+                    return exis[0]['COUNT(*)'] > 0
                 if arg.startswith('register'):
                     if len(res) == 2:
                         us = re.sub('[\[\]]', '', res[0])
