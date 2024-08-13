@@ -210,7 +210,10 @@ currdelete [currency name] - Deletes the currency''')
 
                 def currency_exists(currency_name):
                     cursor.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
-                    return cursor.fetchone()[0] > 0
+                    if (cursor.fetchall() is not None):
+                        return True
+                    else:
+                        return False
 
                 if arg.startswith('register'):
                     if len(res) == 2:
