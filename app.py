@@ -232,7 +232,7 @@ currdelete [currency name] - Deletes the currency''')
                 elif arg.startswith('edit'):
                     pass
                 elif arg.startswith('delete'):
-                    if (res == 1):
+                    if (len(res) == 1):
                         exi = False
                         us = re.sub('[\[\]]', '', res[0])
                         cursor.execute("SELECT CurrencyName FROM Currencies;")
