@@ -16,48 +16,17 @@ db = cursor[0]
 cursor = cursor[1]
 
 def is_author_admin(message: discord.Message) -> bool:
-    # Get the admin role ID from settings
     admin_role_id = settings.ADMINROLE
-    
-    # Check if the author has the role with the specified ID
     return any(role.id == admin_role_id for role in message.author.roles)
 
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
-
-    if message.content.startswith('$'):
-        if ('--' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-        
-        if ('#' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-        
-        if ('/*' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-        
-        if ('*/' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-        
-        if ('"' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-        
-        if ('\'' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
-
-        if (';' in message.content):
-            await message.channel.send('Nice try, no SQL injection for you.')
-            return
 
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
@@ -88,7 +57,7 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
+                cursor.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
                 result = cursor.fetchall()
                 dup = False
                 res = re.sub('[\[\]]', '', res[0])
@@ -119,7 +88,7 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
+                cursor.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
                 result = cursor.fetchall()
                 exi = True
                 res = re.sub('[\[\]]', '', res[0])
@@ -150,7 +119,7 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
+                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
                 result = cursor.fetchall()
                 exi = True
                 res = re.sub('[\[\]]', '', res[0])
@@ -160,7 +129,7 @@ currdelete [currency name] - Deletes the currency''')
                 if (exi):
                     ret = 'You do not have a character with that Name.'
                 else:
-                    cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = "' + str(uid) + '" AND CharacterName = "' + res + '";')
+                    cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = %s AND CharacterName = %s;', (uid, res))
                     result = cursor.fetchall()
                     ret = '***' + res + '***'
                     for row in result:
@@ -188,7 +157,7 @@ currdelete [currency name] - Deletes the currency''')
                         ret = ret + row['CurrencyName'] + '\n'
                 else:
                     res = re.sub('[\[\]]', '', res[0])
-                    cursor.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = "' + res + '";')
+                    cursor.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = %s;', (res,))
                     result = cursor.fetchall()
                     ret = '***' + res + '***' + '\n'
                     for row in result:
@@ -209,7 +178,7 @@ currdelete [currency name] - Deletes the currency''')
                 ret = 'Too Many or Not Enough Arguments'
             else:
                 res = re.sub('[\[\]]', '', res[0])
-                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = "' + res + '";')
+                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = %s;', (res,))
                 result = cursor.fetchall()
                 newlist = sorted(result, key=lambda d: d['Balance'], reverse=True)
                 newlist = newlist[:10]
@@ -289,9 +258,6 @@ currdelete [currency name] - Deletes the currency''')
         except Exception as e:
             await message.channel.send(f"Paging <@206008886438658048>, something's broke:\n{str(e)}")
             return
-
-
-            
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
