@@ -15,6 +15,13 @@ cursor = init.initialize()
 db = cursor[0]
 cursor = cursor[1]
 
+def is_author_admin(message: discord.Message) -> bool:
+    # Get the admin role ID from settings
+    admin_role_id = settings.ADMINROLE
+    
+    # Check if the author has the role with the specified ID
+    return any(role.id == admin_role_id for role in message.author.roles)
+
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
@@ -23,8 +30,12 @@ async def on_message(message):
     if message.author == client.user:
         return
 
+    if message.content.contains('--'):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+
     if message.content.startswith('$help'):
-        await message.channel.send('''*The square brackets [] are mandatory.*
+        await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
 **Commands For Everyone**
 help - View this message
 register [character name] - Making a character
@@ -39,9 +50,9 @@ leaderboard [currency name] - See who's the richest in this currency, for fun (o
 pay [ping user] [character name] [amount] [currency] [description (optional)] - Pays the character the money in that currency with a description
 remove [ping user] [character name] [amount] [currency] [description (optional)] - Removes the amount of money from character
 removeall [ping user] [character name] - Removes all the money from the character
-currency-register [currency name] [description] - Makes the new currency
-currency-edit [currency name] [new description] - Edits existing currency's description
-currency- delete [currency name] - Deletes the currency''')
+currregister [currency name] [description] - Makes the new currency
+curredit [currency name] [new description] - Edits existing currency's description
+currdelete [currency name] - Deletes the currency''')
 
     if message.content.startswith('$register'):
         try:
@@ -51,10 +62,6 @@ currency- delete [currency name] - Deletes the currency''')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
-            elif (arg[0] != '['):
-                ret = 'Unexpected argument before ['
-            elif (arg[-1] != ']'):
-                ret = 'Unexpected argument after ]'
             else:
                 cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
                 result = cursor.fetchall()
@@ -73,8 +80,10 @@ currency- delete [currency name] - Deletes the currency''')
                     db.commit()
                     ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
+            return
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
 
     if message.content.startswith('$delete'):
         try:
@@ -84,10 +93,6 @@ currency- delete [currency name] - Deletes the currency''')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
-            elif (arg[0] != '['):
-                ret = 'Unexpected argument before ['
-            elif (arg[-1] != ']'):
-                ret = 'Unexpected argument after ]'
             else:
                 cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
                 result = cursor.fetchall()
@@ -106,8 +111,10 @@ currency- delete [currency name] - Deletes the currency''')
                     db.commit()
                     ret = 'Deleted Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
+            return
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
     
     if message.content.startswith('$view'):
         try:
@@ -117,10 +124,6 @@ currency- delete [currency name] - Deletes the currency''')
             res = re.findall(r'\[.*?\]', arg)
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
-            elif (arg[0] != '['):
-                ret = 'Unexpected argument before ['
-            elif (arg[-1] != ']'):
-                ret = 'Unexpected argument after ]'
             else:
                 cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = ' + str(uid) + ';')
                 result = cursor.fetchall()
@@ -138,8 +141,10 @@ currency- delete [currency name] - Deletes the currency''')
                     for row in result:
                         ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
             await message.channel.send(ret)
+            return
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
 
     if message.content.startswith('$currency'):
         try:
@@ -150,10 +155,6 @@ currency- delete [currency name] - Deletes the currency''')
                 arg = '[]'
             if (len(res) > 1):
                 ret = 'Too Many Arguments'
-            elif (arg[0] != '['):
-                ret = 'Unexpected argument before ['
-            elif (arg[-1] != ']'):
-                ret = 'Unexpected argument after ]'
             else:
                 if (len(res) == 0):
                     cursor.execute('SELECT CurrencyName, CurrencyDesc FROM Currencies;')
@@ -168,8 +169,10 @@ currency- delete [currency name] - Deletes the currency''')
                     for row in result:
                         ret = ret + '\n' + str(row['CurrencyDesc'])
             await message.channel.send(ret)
+            return
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
 
     if message.content.startswith('$leaderboard'):
         try:
@@ -179,10 +182,6 @@ currency- delete [currency name] - Deletes the currency''')
 
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
-            elif (arg[0] != '['):
-                ret = 'Unexpected argument before ['
-            elif (arg[-1] != ']'):
-                ret = 'Unexpected argument after ]'
             else:
                 res = re.sub('[\[\]]', '', res[0])
                 cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = "' + res + '";')
@@ -193,8 +192,24 @@ currency- delete [currency name] - Deletes the currency''')
                 for row in newlist:
                     ret = ret + '\n' + row['CharacterName'] + ': ' + str(row['Balance'])
             await message.channel.send(ret)
+            return
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
+    
+    if message.content.startswith('$curr'):
+        try:
+            ret = ''
+            if (is_author_admin(message)):
+                ret = 'Placeholder (You\'re an admin.)'
+            else:
+                ret = 'You do not have the required role to perform this command.'
+            await message.channel.send(ret)
+            return
+        except Exception as e:
+            await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
+            return
+
             
 
 print("Init Complete")
