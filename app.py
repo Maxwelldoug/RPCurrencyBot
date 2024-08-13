@@ -54,6 +54,10 @@ async def on_message(message):
         await message.channel.send('Nice try, no SQL injection for you.')
         return
 
+    if (';' in message.content):
+        await message.channel.send('Nice try, no SQL injection for you.')
+        return
+
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
 **Commands For Everyone**
