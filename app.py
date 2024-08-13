@@ -24,7 +24,8 @@ async def on_message(message):
         return
 
     if message.content.startswith('$help'):
-        await message.channel.send('''**Commands For Everyone**
+        await message.channel.send('''*The square brackets [] are mandatory.*
+**Commands For Everyone**
 help - View this message
 register [character name] - Making a character
 delete [character name] - Deleting a character
