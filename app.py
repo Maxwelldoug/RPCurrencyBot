@@ -392,7 +392,7 @@ currdelete [currency name] - Deletes the currency''')
                                 cursor.callproc(sql, sqlargs)
                                 cursor.fetchall()
                                 db.commit()
-                                ret = f'Charged {amo} {cur} from {cha}'
+                                ret = f'Paid {amo} {cur} to {cha}'
                     else:
                         ret = 'Invalid user input, a ping is required.'
             else:
