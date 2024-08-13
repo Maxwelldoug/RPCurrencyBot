@@ -191,7 +191,7 @@ currency- delete [currency name] - Deletes the currency''')
                 ret = '**Leaderboards for ' + res + '**'
                 for row in newlist:
                     ret = ret + '\n' + row['CharacterName'] + ': ' + str(row['Balance'])
-
+            await message.channel.send(ret)
         except Exception as e:
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(e))
             
