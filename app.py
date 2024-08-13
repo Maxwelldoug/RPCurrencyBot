@@ -30,33 +30,34 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if ('--' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
-    
-    if ('#' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
-    
-    if ('/*' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
-    
-    if ('*/' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
-    
-    if ('"' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
-    
-    if ('\'' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
+    if message.content.startswith('$'):
+        if ('--' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
+        
+        if ('#' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
+        
+        if ('/*' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
+        
+        if ('*/' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
+        
+        if ('"' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
+        
+        if ('\'' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
 
-    if (';' in message.content):
-        await message.channel.send('Nice try, no SQL injection for you.')
-        return
+        if (';' in message.content):
+            await message.channel.send('Nice try, no SQL injection for you.')
+            return
 
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
@@ -227,7 +228,7 @@ currdelete [currency name] - Deletes the currency''')
             if is_author_admin(message):
                 arg = message.content.removeprefix('$curr').strip()
                 res = re.findall(r'\[.*?\]', arg)
-                
+
                 def currency_exists(currency_name):
                     cursor.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
                     return cursor.fetchone()[0] > 0
