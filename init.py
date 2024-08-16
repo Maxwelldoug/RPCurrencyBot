@@ -33,7 +33,9 @@ def CheckDBVersion():
 def initialize():
     v = CheckDBVersion()
     if (v == 3):
-        return [db,cursor]
+        cursor.close()
+        db.close()
+        return
     elif (v == 0):
         print('Detected First run. Double Checking for Existing data.')
         danger = False
@@ -346,5 +348,7 @@ CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32
         cursor.callproc(sql, sqlargs)
         result = cursor.fetchall()
         db.commit()
-        
-    return [db,cursor]
+
+    cursor.close()
+    db.close()
+    return

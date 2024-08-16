@@ -11,9 +11,15 @@ intents = discord.Intents.default()
 intents.message_content = True
 client = discord.Client(intents=intents)
 
-cursor = init.initialize()
-db = cursor[0]
-cursor = cursor[1]
+init.initialize()
+db = pymysql.connect(host=settings.DBHOST,
+            port=settings.DBPORT,
+			user=settings.DBUSER,
+			password=settings.DBPASSWD,
+			db=settings.DBDATABASE,
+			charset='utf8mb4',
+            cursorclass= pymysql.cursors.DictCursor)
+cursor = db.cursor()
 
 def is_author_admin(message: discord.Message) -> bool:
     admin_role_id = settings.ADMINROLE
@@ -27,6 +33,22 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user:
         return
+
+    if message.content.startswith('$'):
+        try:
+            sql = "CheckDBVersion"
+            cursor.callproc(sql)
+        except OperationalError as e:
+            cursor.close()
+            db.close()
+            db = pymysql.connect(host=settings.DBHOST,
+            port=settings.DBPORT,
+			user=settings.DBUSER,
+			password=settings.DBPASSWD,
+			db=settings.DBDATABASE,
+			charset='utf8mb4',
+            cursorclass= pymysql.cursors.DictCursor)
+            cursor = db.cursor()
 
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
