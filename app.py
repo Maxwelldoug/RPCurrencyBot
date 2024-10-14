@@ -42,12 +42,12 @@ async def on_message(message):
             crs.close()
             db.close()
             db = pymysql.connect(host=settings.DBHOST,
-            port=settings.DBPORT,
-			user=settings.DBUSER,
-			password=settings.DBPASSWD,
-			db=settings.DBDATABASE,
-			charset='utf8mb4',
-            cursorclass= pymysql.cursors.DictCursor)
+                                port=settings.DBPORT,
+                    			user=settings.DBUSER,
+                    			password=settings.DBPASSWD,
+                    			db=settings.DBDATABASE,
+                    			charset='utf8mb4',
+                                cursorclass= pymysql.cursors.DictCursor)
             crs = db.cursor()
 
     if message.content.startswith('$help'):
