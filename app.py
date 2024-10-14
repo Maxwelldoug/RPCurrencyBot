@@ -13,12 +13,12 @@ client = discord.Client(intents=intents)
 
 init.initialize()
 db = pymysql.connect(host=settings.DBHOST,
-            port=settings.DBPORT,
-			user=settings.DBUSER,
-			password=settings.DBPASSWD,
-			db=settings.DBDATABASE,
-			charset='utf8mb4',
-            cursorclass= pymysql.cursors.DictCursor)
+                port=settings.DBPORT,
+	    		user=settings.DBUSER,
+		    	password=settings.DBPASSWD,
+    			db=settings.DBDATABASE,
+	    		charset='utf8mb4',
+                cursorclass= pymysql.cursors.DictCursor)
 crs = db.cursor()
 
 def is_author_admin(message: discord.Message) -> bool:
