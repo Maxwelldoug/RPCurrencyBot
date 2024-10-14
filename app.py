@@ -19,7 +19,7 @@ db = pymysql.connect(host=settings.DBHOST,
 			db=settings.DBDATABASE,
 			charset='utf8mb4',
             cursorclass= pymysql.cursors.DictCursor)
-cursor = db.cursor()
+crs = db.cursor()
 
 def is_author_admin(message: discord.Message) -> bool:
     admin_role_id = settings.ADMINROLE
@@ -37,9 +37,9 @@ async def on_message(message):
     if message.content.startswith('$'):
         try:
             sql = "CheckDBVersion"
-            cursor.callproc(sql)
+            crs.callproc(sql)
         except pymysql.Error as e:
-            cursor.close()
+            crs.close()
             db.close()
             db = pymysql.connect(host=settings.DBHOST,
             port=settings.DBPORT,
@@ -48,7 +48,7 @@ async def on_message(message):
 			db=settings.DBDATABASE,
 			charset='utf8mb4',
             cursorclass= pymysql.cursors.DictCursor)
-            cursor = db.cursor()
+            crs = db.cursor()
 
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
@@ -79,8 +79,8 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
-                result = cursor.fetchall()
+                crs.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
+                result = crs.fetchall()
                 dup = False
                 res = re.sub('[\[\]]', '', res[0])
                 for row in result:
@@ -91,8 +91,8 @@ currdelete [currency name] - Deletes the currency''')
                 else:
                     sql = "AddCharacter"
                     sqlargs = [res, uid]
-                    cursor.callproc(sql, sqlargs)
-                    result = cursor.fetchall()
+                    crs.callproc(sql, sqlargs)
+                    result = crs.fetchall()
                     db.commit()
                     ret = 'Registered Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
@@ -112,8 +112,8 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
-                result = cursor.fetchall()
+                crs.execute("SELECT CharacterName FROM Characters WHERE OwnerID = %s", (uid,))
+                result = crs.fetchall()
                 exi = True
                 res = re.sub('[\[\]]', '', res[0])
                 for row in result:
@@ -124,8 +124,8 @@ currdelete [currency name] - Deletes the currency''')
                 else:
                     sql = "DelCharacter"
                     sqlargs = [res, uid]
-                    cursor.callproc(sql, sqlargs)
-                    result = cursor.fetchall()
+                    crs.callproc(sql, sqlargs)
+                    result = crs.fetchall()
                     db.commit()
                     ret = 'Deleted Character ' + res + ' for user <@' + str(uid) + '>!'
             await message.channel.send(ret)
@@ -145,8 +145,8 @@ currdelete [currency name] - Deletes the currency''')
             if (len(res) != 1):
                 ret = 'Too Many or Not Enough Arguments'
             else:
-                cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
-                result = cursor.fetchall()
+                crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                result = crs.fetchall()
                 exi = True
                 res = re.sub('[\[\]]', '', res[0])
                 for row in result:
@@ -155,8 +155,8 @@ currdelete [currency name] - Deletes the currency''')
                 if (exi):
                     ret = 'You do not have a character with that Name.'
                 else:
-                    cursor.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = %s AND CharacterName = %s;', (uid, res))
-                    result = cursor.fetchall()
+                    crs.execute('SELECT CurrencyName, Balance FROM Accounts WHERE OwnerID = %s AND CharacterName = %s;', (uid, res))
+                    result = crs.fetchall()
                     ret = '***' + res + '***'
                     for row in result:
                         ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
@@ -179,15 +179,15 @@ currdelete [currency name] - Deletes the currency''')
                 ret = 'Too Many Arguments'
             else:
                 if (len(res) == 0):
-                    cursor.execute('SELECT CurrencyName, CurrencyDesc FROM Currencies;')
-                    result = cursor.fetchall()
+                    crs.execute('SELECT CurrencyName, CurrencyDesc FROM Currencies;')
+                    result = crs.fetchall()
                     ret = '**List of Currencies:**\n'
                     for row in result:
                         ret = ret + row['CurrencyName'] + '\n'
                 else:
                     res = re.sub('[\[\]]', '', res[0])
-                    cursor.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = %s;', (res,))
-                    result = cursor.fetchall()
+                    crs.execute('SELECT CurrencyDesc FROM Currencies WHERE CurrencyName = %s;', (res,))
+                    result = crs.fetchall()
                     ret = '***' + res + '***' + '\n'
                     for row in result:
                         ret = ret + '\n' + str(row['CurrencyDesc'])
@@ -209,8 +209,8 @@ currdelete [currency name] - Deletes the currency''')
                 ret = 'Too Many or Not Enough Arguments'
             else:
                 res = re.sub('[\[\]]', '', res[0])
-                cursor.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = %s;', (res,))
-                result = cursor.fetchall()
+                crs.execute('SELECT CharacterName, Balance FROM Accounts WHERE CurrencyName = %s;', (res,))
+                result = crs.fetchall()
                 newlist = sorted(result, key=lambda d: d['Balance'], reverse=True)
                 newlist = newlist[:10]
                 ret = '**Leaderboards for ' + res + '**'
@@ -232,8 +232,8 @@ currdelete [currency name] - Deletes the currency''')
                 res = re.findall(r'\[.*?\]', arg)
 
                 def currency_exists(currency_name):
-                    cursor.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
-                    exis = cursor.fetchall()
+                    crs.execute("SELECT COUNT(*) FROM Currencies WHERE CurrencyName = %s", (currency_name,))
+                    exis = crs.fetchall()
                     return exis[0]['COUNT(*)'] > 0
                 if arg.startswith('register'):
                     if len(res) == 2:
@@ -243,7 +243,7 @@ currdelete [currency name] - Deletes the currency''')
                         if not currency_exists(us):
                             sql = "AddCurrency"
                             sqlargs = [us, de]
-                            cursor.callproc(sql, sqlargs)
+                            crs.callproc(sql, sqlargs)
                             db.commit()
                             ret = f"{us} was registered."
                         else:
@@ -259,7 +259,7 @@ currdelete [currency name] - Deletes the currency''')
                         if currency_exists(us):
                             sql = "EditCurrency"
                             sqlargs = [us, de]
-                            cursor.callproc(sql, sqlargs)
+                            crs.callproc(sql, sqlargs)
                             db.commit()
                             ret = f"{us} was updated."
                         else:
@@ -274,7 +274,7 @@ currdelete [currency name] - Deletes the currency''')
                         if currency_exists(us):
                             sql = "DelCurrency"
                             sqlargs = [us]
-                            cursor.callproc(sql, sqlargs)
+                            crs.callproc(sql, sqlargs)
                             db.commit()
                             ret = f"{us} was deleted."
                         else:
@@ -309,8 +309,8 @@ currdelete [currency name] - Deletes the currency''')
                         if (len(uid) == 1):
                             uid = re.sub('[\<\@\>]', '', uid[0])
                             cha = re.sub('[\[\]]', '', res[1])
-                            cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
-                            result = cursor.fetchall()
+                            crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                            result = crs.fetchall()
                             exi = True
                             res = re.sub('[\[\]]', '', res[0])
                             for row in result:
@@ -321,8 +321,8 @@ currdelete [currency name] - Deletes the currency''')
                             else:
                                 sql = 'ZeroBal'
                                 sqlargs = [cha, uid]
-                                cursor.callproc(sql, sqlargs)
-                                cursor.fetchall()
+                                crs.callproc(sql, sqlargs)
+                                crs.fetchall()
                                 db.commit()
                                 ret = f'set all balances for {cha} to Zero.'
                         else:
@@ -336,8 +336,8 @@ currdelete [currency name] - Deletes the currency''')
                         if (len(uid) == 1):
                             uid = re.sub('[\<\@\>]', '', uid[0])
                             cha = re.sub('[\[\]]', '', res[1])
-                            cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
-                            result = cursor.fetchall()
+                            crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                            result = crs.fetchall()
                             exi = True
                             for row in result:
                                 if (row['CharacterName'] == cha):
@@ -359,8 +359,8 @@ currdelete [currency name] - Deletes the currency''')
                                     amo = tem
                                     sql = 'DoTransaction'
                                     sqlargs = [uid, cha, cur, des, -amo] # IN UIDin varchar(32), IN CharName varchar(32), IN CurrName varchar(32), IN TransDesc varchar(64), IN Am int
-                                    cursor.callproc(sql, sqlargs)
-                                    cursor.fetchall()
+                                    crs.callproc(sql, sqlargs)
+                                    crs.fetchall()
                                     db.commit()
                                     ret = f'Charged {amo} {cur} from {cha}'
                         else:
@@ -387,8 +387,8 @@ currdelete [currency name] - Deletes the currency''')
                     if (len(uid) == 1):
                         uid = re.sub('[\<\@\>]', '', uid[0])
                         cha = re.sub('[\[\]]', '', res[1])
-                        cursor.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
-                        result = cursor.fetchall()
+                        crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                        result = crs.fetchall()
                         exi = True
                         for row in result:
                             if (row['CharacterName'] == cha):
@@ -410,8 +410,8 @@ currdelete [currency name] - Deletes the currency''')
                                 amo = tem
                                 sql = 'DoTransaction'
                                 sqlargs = [uid, cha, cur, des, amo] # IN UIDin varchar(32), IN CharName varchar(32), IN CurrName varchar(32), IN TransDesc varchar(64), IN Am int
-                                cursor.callproc(sql, sqlargs)
-                                cursor.fetchall()
+                                crs.callproc(sql, sqlargs)
+                                crs.fetchall()
                                 db.commit()
                                 ret = f'Paid {amo} {cur} to {cha}'
                     else:
