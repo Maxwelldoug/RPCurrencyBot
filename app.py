@@ -12,14 +12,6 @@ intents.message_content = True
 client = discord.Client(intents=intents)
 
 init.initialize()
-db = pymysql.connect(host=settings.DBHOST,
-                port=settings.DBPORT,
-	    		user=settings.DBUSER,
-		    	password=settings.DBPASSWD,
-    			db=settings.DBDATABASE,
-	    		charset='utf8mb4',
-                cursorclass= pymysql.cursors.DictCursor)
-crs = db.cursor()
 
 def is_author_admin(message: discord.Message) -> bool:
     admin_role_id = settings.ADMINROLE
@@ -31,24 +23,17 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    db = pymysql.connect(host=settings.DBHOST,
+                port=settings.DBPORT,
+	    		user=settings.DBUSER,
+		    	password=settings.DBPASSWD,
+    			db=settings.DBDATABASE,
+	    		charset='utf8mb4',
+                cursorclass= pymysql.cursors.DictCursor)
+    crs = db.cursor()
+
     if message.author == client.user:
         return
-
-    if message.content.startswith('$'):
-        try:
-            sql = "CheckDBVersion"
-            crs.callproc(sql)
-        except pymysql.Error as e:
-            crs.close()
-            db.close()
-            db = pymysql.connect(host=settings.DBHOST,
-                                port=settings.DBPORT,
-                    			user=settings.DBUSER,
-                    			password=settings.DBPASSWD,
-                    			db=settings.DBDATABASE,
-                    			charset='utf8mb4',
-                                cursorclass= pymysql.cursors.DictCursor)
-            crs = db.cursor()
 
     if message.content.startswith('$help'):
         await message.channel.send('''*The square brackets [] are mandatory. Arguments outside of brackets will be ignored.*
@@ -425,6 +410,9 @@ currdelete [currency name] - Deletes the currency''')
             outp = template.format(type(ex).__name__, ex.args)
             await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
             return
+    
+    db.close()
+    crs.close()
 
 print("Init Complete")
 client.run(settings.BOTTOKEN, log_handler=handler, log_level=logging.DEBUG)
