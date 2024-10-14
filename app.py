@@ -38,7 +38,7 @@ async def on_message(message):
         try:
             sql = "CheckDBVersion"
             cursor.callproc(sql)
-        except OperationalError as e:
+        except pymysql.Error as e:
             cursor.close()
             db.close()
             db = pymysql.connect(host=settings.DBHOST,
