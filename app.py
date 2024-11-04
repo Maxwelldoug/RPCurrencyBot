@@ -386,6 +386,11 @@ async def on_message(message):
                                 cur = re.sub('[\[\]]', '', res[3])
                                 amo = re.sub('[\[\]]', '', res[2])
                                 des = re.sub('[\[\]]', '', res[4])
+                                crs.execute('SELECT CurrencyName FROM Currencies WHERE CurrencyName = %s;', (cur,))
+                                arr = crs.fetchall()
+                                if (len(arr) == 0):
+                                    await message.channel.send("That Currency does not exist.")
+                                    return                                    
                                 try:
                                     tem = int(amo)
                                 except ValueError:
