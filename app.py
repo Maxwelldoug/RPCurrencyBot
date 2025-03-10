@@ -145,7 +145,8 @@ async def on_message(message):
                         result = crs.fetchall()
                         ret = '***' + res + '***'
                         for row in result:
-                            ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))          
+                            if (row['Balance'] != 0):
+                                ret = ret + '\n\t' + str(row['CurrencyName'] + ': ' + str(row['Balance']))        
                 await message.channel.send(ret)
                 return
             except Exception as e:
