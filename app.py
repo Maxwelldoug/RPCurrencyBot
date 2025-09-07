@@ -46,6 +46,7 @@ async def on_message(message):
     history [character name] - Views the character's transaction history (shows descriptions) -- unimplemented.
     currency - View all the types of currency.
     currency [currency name] - View the specific currency and its description
+    list - Returns all of a player's characters.
     leaderboard [currency name] - See who's the richest in this currency, for fun
 
     **Commands Only For Admins**
@@ -417,6 +418,30 @@ async def on_message(message):
                 outp = template.format(type(ex).__name__, ex.args)
                 await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
                 return
+        
+        if message.content.startswith('$list'):
+            try:
+                ret = ''
+                arg = message.content.removeprefix('$list ')
+                res = re.findall(r'\[.*?\]', arg)
+                uid = int(message.author.id)
+
+                if (len(res) != 0):
+                    ret = '$list does not accept arguments.'
+                else:
+                    crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
+                    result = crs.fetchall()
+                    ret = '**Characters for ' + res + '**'
+                    for row in result:
+                        ret = ret + '\n- ' + row['CharacterName']
+                await message.channel.send(ret)
+                return
+            except Exception as e:
+                template = "An exception of type {0} occurred. Arguments:\n{1!r}"
+                outp = template.format(type(ex).__name__, ex.args)
+                await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
+                return
+    
     finally:
         db.close()
         crs.close()
