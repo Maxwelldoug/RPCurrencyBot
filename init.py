@@ -342,7 +342,7 @@ CREATE OR REPLACE PROCEDURE ZeroBal(IN CharName varchar(32), IN UIDin varchar(32
 
         cursor.fetchall()
         db.commit()
-        v=2
+        v=3
         sql = "SetDBVersion"
         sqlargs = [3]
         cursor.callproc(sql, sqlargs)
