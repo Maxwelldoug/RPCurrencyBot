@@ -426,19 +426,19 @@ async def on_message(message):
                 res = re.findall(r'\[.*?\]', arg)
                 uid = int(message.author.id)
 
-                if (len(res) != 0):
+                if len(res) != 0:
                     ret = '$list does not accept arguments.'
                 else:
                     crs.execute('SELECT CharacterName FROM Characters WHERE OwnerID = %s;', (uid,))
                     result = crs.fetchall()
-                    ret = '**Characters for ' + res + '**'
+                    ret = f'**Characters for <@{uid}>**'
                     for row in result:
-                        ret = ret + '\n- ' + row['CharacterName']
+                        ret += '\n- ' + row['CharacterName']
                 await message.channel.send(ret)
                 return
             except Exception as e:
                 template = "An exception of type {0} occurred. Arguments:\n{1!r}"
-                outp = template.format(type(ex).__name__, ex.args)
+                outp = template.format(type(e).__name__, e.args)  # Fixed: use 'e' instead of 'ex'
                 await message.channel.send("Paging <@206008886438658048>, something's broke:\n" + str(outp))
                 return
     
